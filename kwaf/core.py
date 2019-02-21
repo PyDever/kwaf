@@ -72,7 +72,7 @@ def stealth_port_scan ():
 		__webpage_url = raw_input('\nwebpage URL> ')
 	except KeyboardInterrupt:
 		print(termcolor.colored(
-			"\n[!] User requested shutdown. Quitting now."))
+			"\n[!] User requested shutdown. Quitting now.", "red"))
 		sys.exit(0)
 
 	bad_components = ['http', 'https', '//', ':', 'www.']
@@ -86,17 +86,91 @@ def stealth_port_scan ():
 		nmap_api_response = __session.get('http://api.hackertarget.com/nmap/?q='+__webpage_url)
 	except Exception:
 		print(termcolor.colored(
-			"\n[!] Nmap scan on target webpage seems to have failed."))
+			"\n[!] Nmap scan on target webpage seems to have failed.", "red"))
 
 	if 'PORT' and 'SERVICE' in nmap_api_response.content:
 		print(nmap_api_response.content)
 
 	elif 'PORT' or 'SERVICE' not in nmap_api_response:
 		print(termcolor.colored(
-			"\n[!] Nmap scan on target webpage seems to have failed."))
+			"\n[!] Nmap scan on target webpage seems to have failed.", "red"))
+
+def fuzz_webpage ():
+	# make get request to website and parse markup
+	# to find input fields and form data
+	try:
+		__webpage_url = raw_input('\nwebpage URL> ')
+	except KeyboardInterrupt:
+		print(termcolor.colored(
+			"\n[!] User requesred shutdown. Quitting now.", "red"))
+		sys.exit(0)
+
+	try:
+		webpage_response = __session.get(__webpage_url, 
+			headers=__default_headers)
+	except Exception:
+		print(termcolor.colored(
+			"\n[!] Input-field fuzz operation seems to have failed.", "red"))
+
+	if webpage_response.status_code == 200 or 302:
+
+		# build html parser here
+		html_parser = BeautifulSoup(webpage_response.content, 'html.parser')
+		fuzzed_forms = html_parser.findAll('form')
+
+		# normalize list of forms into script names
+		form_names = {}
+		for fuzzed_form in fuzzed_forms:
+			form_names[fuzzed_form['action']] = [fuzzed_form['name'], fuzzed_form]
+		'''
+		for name, form_object in form_names.items():
+			print(termcolor.colored("-> %s" % name, "green"))
+		'''
+		# all user-input fields present in each form
+		user_input_fields = {}
+		for name, form_object in form_names.items():
+			user_input_fields[name] = [form_object[0], form_object[1].findAll('input')]
+
+		# present final fields
+		for form, fields in user_input_fields.items():
+			print(termcolor.colored("-> ACTION: %s, NAME: %s" % (form,fields[0]), "green"))
+
+			for field in fields[1]: 
+				print(termcolor.colored("   %s" % field['name'], "white"))
+
+	elif webpage_response.status_code != 200 or 301:
+		print(termcolor.colored(
+			"\n[!] Input-field fuzz operation seems to have failed.", "red"))
+
+def test_for_WAF_security ():
+	# test a post request to webpage and attempt small injection
+	# if denied, then WAF is present
+	try:
+		__webpage_url = raw_input('\nwebpage URL> ')
+		__input_form = raw_input('target form> ')
+		__form_field = raw_input('input field> ')
+
+	except KeyboardInterrupt:
+		print(termcolor.colored(
+			"\n[!] User requesred shutdown. Quitting now.", "red"))
+		sys.exit(0)
+
+	test_request = mechanize.Browser()
+
+	test_request.open(__webpage_url)
+	test_request.select_form(__input_form)
+
+	test_payload = '<svg><script>alert&grave;1&grave;<p>'
+	test_request.form[__form_field] = test_payload
+
+	test_request.submit()
+	webpage_response = test_request.response().read()
+	print(termcolor.colored(webpage_response, "green"))
 
 # export all module data
 action_modules.append(dump_response_headers)
 action_modules.append(stealth_port_scan)
+action_modules.append(fuzz_webpage)
+action_modules.append(test_for_WAF_security)
 
 

@@ -11,8 +11,6 @@ class InvalidAction (Exception):
 		return "Requested action does not exist."
 
 from core import action_modules, action_options
-
-
 """display kwaf banner"""
 # do this later
 
