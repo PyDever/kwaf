@@ -1,0 +1,6 @@
+bs4==0.0.1
+requests==2.21.0
+setuptools
+termcolor
+pytest
+mechanize

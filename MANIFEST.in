@@ -1,0 +1,5 @@
+include .gitignore README.md
+include setup.py requirements.txt android-install.sh 
+recursive-include kwaf *.py *.txt *.xml
+recursive-include .spyproject *.conf *.ini *.py
+recursive-include tests
