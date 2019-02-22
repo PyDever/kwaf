@@ -14,6 +14,6 @@ __license__         = 'BSD 3-Clause License'
 setup(
       name='kwaf', version=__version__, description=__description__,
       author=__author__, license=__license__, author_email=__author_email__,
-      url='https://github.com/PyDever/xssmap', packages=['kwaf', 'tests'])
+      url='https://github.com/PyDever/kwaf', packages=['kwaf', 'tests'])
 
 # no need for install_requires field, android-install.sh calls requirements.txt
