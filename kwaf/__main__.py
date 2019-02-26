@@ -1,4 +1,9 @@
 
+
+"""
+entry point main (control script)
+"""
+
 # known-good imports
 from __future__ import print_function
 

@@ -1,4 +1,9 @@
 
+"""
+comprehensive collection of all known user agents
+relative to <device> and <browser>
+"""
+
 all_user_agents = {
 	'samsung-galaxy-s9':'Mozilla/5.0 (Linux; Android 8.0.0; SM-G960F Build/R16NW) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.84 Mobile Safari/537.36',
 	'samsung-galaxy-s8':'Mozilla/5.0 (Linux; Android 7.0; SM-G892A Build/NRD90M; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/60.0.3112.107 Mobile Safari/537.36',
