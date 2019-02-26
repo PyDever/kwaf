@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# this script will install xssmap on android
+# this script will install kwaf on android
 # only works using termux shell
 
 function cleanup_installation {
