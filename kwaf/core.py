@@ -174,17 +174,20 @@ def test_for_WAF_security ():
 	
 	#print(termcolor.colored(webpage_response, "green"))
 	firewall_is_present = False
+	firewall = None
 
 	for web_application_firewall in web_application_firewalls:
 
 		if webpage_response.find(web_application_firewall):
+
+			firewall = web_application_firewall
 			firewall_is_present = True 
 
 		elif not webpage_response.find(web_application_firewall):
 			firewall_is_present = False
 
 
-	print(termcolor.colored(firewall_is_present, "white"))
+	print(termcolor.colored(firewall_is_present+":"+str(firewall), "white"))
 
 # export all module data
 action_modules.append(dump_response_headers)
