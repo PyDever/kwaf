@@ -10,7 +10,6 @@ from __future__ import print_function
 class ModuleNotFound (Exception):
 	def __str__ (self):
 		return "Could not import required module."
-
 class InvalidAction (Exception):
 	def __str__ (self):
 		return "Requested action does not exist."
