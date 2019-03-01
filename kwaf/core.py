@@ -43,6 +43,9 @@ action_options = [
 	"4) Test for any WAF security",
 	"5) Attempt to bypass WAF"]
 
+web_application_firewalls = [
+	"WebKnight", "Mod_Security", "dotDefender", "Cloudflare"]
+
 action_modules = [] # fill with functions later
 
 """NOTE: Please focus on modularity AND THEN optimization."""
@@ -169,12 +172,24 @@ def test_for_WAF_security ():
 
 	test_request.submit()
 	webpage_response = test_request.response().read()
-	print(termcolor.colored(webpage_response, "green"))
+	
+	#print(termcolor.colored(webpage_response, "green"))
+	firewall_is_present = False
+
+	for web_application_firewall in web_application_firewalls:
+
+		if webpage_response.find(web_application_firewall):
+			firewall_is_present = True 
+
+		elif not webpage_response.find(web_application_firewall):
+			firewall_is_present = False
+
+
+	print(termcolor.colored(firewall_is_present, "white"))
 
 # export all module data
 action_modules.append(dump_response_headers)
 action_modules.append(stealth_port_scan)
 action_modules.append(fuzz_webpage)
 action_modules.append(test_for_WAF_security)
-
 
