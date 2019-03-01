@@ -187,11 +187,18 @@ def test_for_WAF_security ():
 			firewall_is_present = False
 
 
-	print(termcolor.colored(firewall_is_present+":"+str(firewall), "white"))
+	print(termcolor.colored(
+		"%s:%s" % (str(firewall_is_present), firewall), "white"))
+
+def attempt_to_bypass_WAF_security ():
+	# attempt to bypass a webpages security 
+	print(termcolor.colored(
+		"not yet implemented", "red"))
 
 # export all module data
 action_modules.append(dump_response_headers)
 action_modules.append(stealth_port_scan)
 action_modules.append(fuzz_webpage)
 action_modules.append(test_for_WAF_security)
+action_modules.append(attempt_to_bypass_WAF_security)
 
