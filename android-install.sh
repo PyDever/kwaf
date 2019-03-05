@@ -13,11 +13,11 @@ function cleanup_installation {
 }
 
 if [[ $(pwd) == *"/com.termux/"* ]]; then 
-  python setup.py build install # run python setuptools
-  # control script
-  
+
+  # note the implicit use of python2 as per android linux syntax
+  python2 setup.py build install # run python setuptools control script
   # install dependencies from requirements file
-  python -m pip install -r requirements.txt
+  python2 -m pip install -r requirements.txt
 else
   echo '[ERR] It seems you are not using termux.';
   echo 'Quitting now.'; 
@@ -26,3 +26,5 @@ fi
 
 cleanup_installation # run cleanup
 exit
+
+
