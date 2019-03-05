@@ -22,5 +22,3 @@ all_user_agents = {
 	'freebsd-pc-chromium':'Mozilla/5.0 (X11; FreeBSD amd64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.0.2357.130 Safari/537.36'
 }
 
-
-
