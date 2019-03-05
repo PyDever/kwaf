@@ -40,7 +40,8 @@ action_options = [
 	"2) Perform stealth port scan",
 	"3) Fuzz webpage for input fields",
 	"4) Test for any WAF security",
-	"5) Attempt to bypass WAF"]
+	"5) Attempt to bypass WAF", 
+	"6) Geo-locate web server"]
 
 web_application_firewalls = [
 	"WebKnight", "Mod_Security", "dotDefender", "Cloudflare"]
@@ -101,6 +102,30 @@ def stealth_port_scan ():
 		print(termcolor.colored(
 			"\n[!] Nmap scan on target webpage seems to have failed.", "red"))
 
+def geolocate ():
+	# make get request to nmap API and scrape results
+	try:
+		__webpage_url = raw_input('\nwebpage URL> ')
+	except KeyboardInterrupt:
+		print(termcolor.colored(
+			"\n[!] User requested shutdown. Quitting now.", "red"))
+		sys.exit(0)
+
+	bad_components = ['http', 'https', '//', ':', 'www.']
+	for component in bad_components:
+
+		if component in __webpage_url: 
+			__webpage_url = __webpage_url.replace(
+				component, "")
+
+	try:
+		nmap_api_response = __session.get('http://api.hackertarget.com/geoip/?q='+__webpage_url)
+	except Exception:
+		print(termcolor.colored(
+			"\n[!] Geo scan on target webpage seems to have failed.", "red"))
+
+	print(nmap_api_response.content)
+
 def fuzz_webpage ():
 	# make get request to website and parse markup
 	# to find input fields and form data
@@ -123,26 +148,13 @@ def fuzz_webpage ():
 		# build html parser here
 		html_parser = BeautifulSoup(webpage_response.content, 'html.parser')
 		fuzzed_forms = html_parser.findAll('form')
-
-		# normalize list of forms into script names
-		form_names = {}
-		for fuzzed_form in fuzzed_forms:
-			form_names[fuzzed_form['action']] = [fuzzed_form['name'], fuzzed_form]
 		'''
 		for name, form_object in form_names.items():
 			print(termcolor.colored("-> %s" % name, "green"))
 		'''
 		# all user-input fields present in each form
-		user_input_fields = {}
-		for name, form_object in form_names.items():
-			user_input_fields[name] = [form_object[0], form_object[1].findAll('input')]
-
-		# present final fields
-		for form, fields in user_input_fields.items():
-			print(termcolor.colored("-> ACTION: %s, NAME: %s" % (form,fields[0]), "green"))
-
-			for field in fields[1]: 
-				print(termcolor.colored("   %s" % field['name'], "white"))
+		for form in fuzzed_forms:
+			print(termcolor.colored(form, "green"))
 
 	elif webpage_response.status_code != 200 or 301:
 		print(termcolor.colored(
@@ -163,8 +175,11 @@ def test_for_WAF_security ():
 
 	test_request = mechanize.Browser()
 
+	def select_form(form):
+  		return form.attrs.get('action', None) == __input_form
+
 	test_request.open(__webpage_url)
-	test_request.select_form(__input_form)
+	test_request.select_form(predicate=select_form)
 
 	test_payload = '<svg><script>alert&grave;1&grave;<p>'
 	test_request.form[__form_field] = test_payload
@@ -201,4 +216,4 @@ action_modules.append(stealth_port_scan)
 action_modules.append(fuzz_webpage)
 action_modules.append(test_for_WAF_security)
 action_modules.append(attempt_to_bypass_WAF_security)
-
+action_modules.append(geolocate)
